@@ -73,3 +73,34 @@ chmod +x "$MACOS_DIR/$APP_NAME"
 
 echo "Build complete! App bundle created at: $APP_BUNDLE"
 echo "You can now test the app by opening: $APP_BUNDLE"
+
+# Create DMG
+echo ""
+echo "Creating DMG installer..."
+DMG_NAME="${APP_NAME}_v${VERSION}.dmg"
+TEMP_DIR="temp_dmg"
+
+# Remove old DMG if it exists
+if [ -f "$DMG_NAME" ]; then
+    echo "Removing old DMG: $DMG_NAME"
+    rm "$DMG_NAME"
+fi
+
+# Create temporary directory for DMG
+if [ -d "$TEMP_DIR" ]; then
+    rm -rf "$TEMP_DIR"
+fi
+mkdir "$TEMP_DIR"
+
+# Copy app to temp directory
+cp -R "$APP_BUNDLE" "$TEMP_DIR/"
+
+# Create DMG
+echo "Creating DMG: $DMG_NAME"
+hdiutil create -volname "$APP_NAME" -srcfolder "$TEMP_DIR" -ov -format UDZO "$DMG_NAME"
+
+# Clean up
+rm -rf "$TEMP_DIR"
+
+echo "DMG created successfully: $DMG_NAME"
+echo "Complete! App and installer ready."
